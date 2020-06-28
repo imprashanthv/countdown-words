@@ -5,7 +5,7 @@ import keyboard  # Dependency. please do 'pip install keyboard' before proceedin
 import sys
 
 
-# general purpose - string to dictionary builder.
+# general purpose - list to dictionary builder.
 def build_dict(list_to_build):
     built_dict = {}
     for k in list_to_build:
