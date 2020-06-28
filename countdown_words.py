@@ -1,6 +1,6 @@
 # imports
 import random
-from threading import Timer  # You can make it light weight by just importing Timer
+from threading import Timer  # to keep track of time
 import keyboard  # Dependency. please do 'pip install keyboard' before proceeding
 
 
@@ -40,23 +40,31 @@ def is_valid(letter_list, word):
             return False
 
 
-# this function enables to keep the time limit
+# this function enables to keep track of the time limit
 def time_check():
     global user_word
+    global is_time_up
     if user_word is not None:
         return
     else:
         print("sorry, time's up")
+        is_time_up = not is_time_up
         keyboard.press_and_release('enter')
 
 
 def start_game(name):
     global user_word
-    timeout = 30
+    global is_time_up
+    timeout = 30 # in secs. change if needed.
     print("\n\n" + name + " - Your turn.\nYou have " + str(timeout) + " seconds")
     t = Timer(timeout, time_check)
     t.start()
     user_word = input("Make a real word out of those letters: ")
+    if is_time_up:
+        t.cancel()  # thread used. - cancelling the thread for player - 2
+        user_word = None
+        is_time_up = not is_time_up
+        return 0
 
     if user_word in english_words:
         if is_valid(user_letters, user_word):
@@ -70,12 +78,13 @@ def start_game(name):
         print("Sorry, It's not a dictionary word!")
         score = 0
 
-    t.cancel()
+    t.cancel()  # thread not used. cancelling it
     user_word = None
     return score
 
 
 # pre-data
+is_time_up = False
 vowels = ['a', 'e', 'i', 'o', 'u']
 consonants = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z']
 # reading english words as a set from a text file
@@ -103,6 +112,7 @@ print("-------------------------------------------------------------------------
 player1_score = start_game("player 1")
 player2_score = start_game("player 2")
 
+# print scores
 if player1_score > player2_score:
     print("\n\nplayer 1 wins by " + str(player1_score - player2_score) + " points lead")
 elif player2_score > player1_score:
